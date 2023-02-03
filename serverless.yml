@@ -1,0 +1,76 @@
+service: serverlessdemo
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  stage: dev
+  region: ap-south-1
+  environment: 
+    DYNAMODB_TABLE_NAME: StudentTable
+
+plugins:
+  - serverless-offline
+  - serverless-iam-roles-per-function
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - http:
+          path: /hi
+          method: GET      
+  createStudent:
+    handler: handler.createStudent
+    events:
+      - http:
+          path: /student
+          method: POST  
+  getStudentById:
+    handler: handler.getStudentById
+    name: get-student
+    events:
+      - http: 
+          path: /student/{id}
+          method: GET                 
+  getAllStudents:
+    handler: handler.getAllStudents
+    name: get-All-Students
+    events:
+      - http: 
+          path: /student
+          method: GET       
+  updateStudent:
+    handler: handler.updateStudent
+    name: Update-Student
+    events:
+      - http: 
+          path: /student/{id}
+          method: PUT       
+  deleteStudent:
+    handler: handler.deleteStudent
+    name: Delete-Student
+    events:
+      - http: 
+          path: /student/{id}
+          method: DELETE     
+
+resources:
+  Description: Stack for Student Data
+  Resources:
+    StudentTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: "id"
+            AttributeType: "S"
+        KeySchema:
+          - AttributeName: "id"
+            KeyType: "HASH"
+        BillingMode: PAY_PER_REQUEST
+        TableName: StudentTable
+#  Outputs:
+#     NewOutput:
+#       Description: "Description for the output"
+#       Value: "Some output value"
